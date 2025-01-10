@@ -4,11 +4,12 @@ import Image from "next/image";
 import { FaInstagram, FaLinkedin } from "react-icons/fa";
 import { FaEnvelope } from "react-icons/fa";
 import ContactModal from "./Modal";
-const Card: React.FC = () => {
+
+export default function Card() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const handleOpenModal = () => setIsModalOpen(true);
+  const handleCloseModal = () => setIsModalOpen(false);
 
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-8">
@@ -34,7 +35,7 @@ const Card: React.FC = () => {
           </p>
 
           <button
-            onClick={openModal}
+            onClick={handleOpenModal}
             className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg shadow-md hover:bg-blue-700 transition-transform transform hover:scale-105"
           >
             Bizimle Çalışmak İster Misiniz?
@@ -92,27 +93,28 @@ const Card: React.FC = () => {
       {isModalOpen && (
         <div
           className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50"
-          onClick={closeModal}
+          onClick={handleCloseModal}
         >
           <div
             className="bg-white dark:bg-gray-900 p-8 rounded-lg max-w-md w-full"
-            onClick={(e) => e.stopPropagation()} // Modal dışına tıklanırsa kapanmasın
+            onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
               Bize ulaşın
               <button
-                onClick={closeModal}
+                onClick={handleCloseModal}
                 className="ml-[60%] text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white"
               >
                 X
               </button>
             </h2>
-            <ContactModal />
+            <ContactModal 
+              isOpen={isModalOpen}
+              onClose={handleCloseModal}
+            />
           </div>
         </div>
       )}
     </div>
   );
-};
-
-export default Card;
+}

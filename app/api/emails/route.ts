@@ -11,6 +11,7 @@ interface FormData {
   position: string;
   message: string;
   cv: string; // Base64 formatındaki CV
+  fileType: string; // Dosya türünü ekleyelim
 }
 
 // E-posta gönderme işlemi
@@ -77,6 +78,17 @@ export async function POST(request: Request) {
     if (!formData.email || !formData.name || !formData.surname || !formData.position) {
       return NextResponse.json(
         { error: "Gerekli form alanları eksik" },
+        { status: 400 }
+      );
+    }
+
+    // İzin verilen dosya türleri
+    const allowedFileTypes = ['pdf', 'doc', 'docx', 'txt'];
+    const fileType = formData.fileType.toLowerCase();
+    
+    if (!allowedFileTypes.includes(fileType)) {
+      return NextResponse.json(
+        { error: "Sadece PDF, DOC, DOCX ve TXT dosyalarına izin verilmektedir" },
         { status: 400 }
       );
     }
