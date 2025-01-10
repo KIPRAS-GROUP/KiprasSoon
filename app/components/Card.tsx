@@ -53,7 +53,7 @@ const Card: React.FC = () => {
           <div className="flex space-x-6">
             {/* Instagram Icon */}
             <a
-              href="https://www.instagram.com"
+              href="https://www.instagram.com/kiprasgroup/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-3xl text-gray-300 hover:text-blue-500 transition"
@@ -63,7 +63,7 @@ const Card: React.FC = () => {
 
             {/* LinkedIn Icon */}
             <a
-              href="https://www.linkedin.com"
+              href="https://www.linkedin.com/company/kipras/posts/?feedView=all"
               target="_blank"
               rel="noopener noreferrer"
               className="text-3xl text-gray-300 hover:text-blue-700 transition"
