@@ -15,10 +15,15 @@ interface FormData {
 // E-posta gönderme işlemi
 const sendEmail = async (formData: FormData) => {
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: process.env.SMTP_HOST || "smtp.gmail.com", // Gmail SMTP host
+    port: Number(process.env.SMTP_PORT) || 587, // Gmail SMTP port (587 TLS için)
+    secure: false, // TLS kullanacağımız için false
     auth: {
       user: process.env.EMAIL_USER, // Gmail hesabınız
-      pass: process.env.EMAIL_PASS, // Gmail şifreniz
+      pass: process.env.EMAIL_PASS, // Gmail şifreniz veya App Password
+    },
+    tls: {
+      rejectUnauthorized: false, // Güvenli olmayan TLS bağlantılarını kabul et
     },
   });
 
