@@ -166,12 +166,14 @@ const ContactForm = () => {
             className="mt-1 p-2 border rounded w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           >
             <option value="">Seçiniz</option>
-            <option value="developer">Geliştirici</option>
+            <option value="developer">Developer</option>
             <option value="designer">Tasarımcı</option>
-            <option value="ceo">CEO</option>
             <option value="reklam">Reklam</option>
+            <option value="ceoasistan">Kişisel Asistan</option>
             <option value="broker">Broker</option>
-            <option value="manager">Müdür</option>
+            <option value="manager">Mimar</option>
+            <option value="icmanager">İç Mimar</option>
+            <option value="other">Diğer</option>
           </select>
         </div>
 

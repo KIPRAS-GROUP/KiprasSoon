@@ -46,7 +46,15 @@ const Card: React.FC = () => {
 
       <div className="bg-gray-800 text-white p-8 rounded-xl shadow-2xl transition-all transform hover:scale-105 hover:shadow-3xl mt-[-80px] relative">
         <h3 className="text-3xl font-bold mb-4">İletişim</h3>
-        <p className="text-lg text-gray-300 mb-4">Bilgi ve iletişim için:</p>
+        <p className="text-lg text-gray-300 mb-4">
+          Bilgi ve iletişim için:{" "}
+          <a
+            href="mailto:info@kipras.com.tr"
+            className="hover:text-blue-500 transition underline"
+          >
+            info@kipras.com.tr
+          </a>
+        </p>
 
         <div className="space-y-4">
           {/* Sosyal Medya Kartı */}

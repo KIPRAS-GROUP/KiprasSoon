@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "KİPRAS GOUP",
-  description: "Generat your future by kipras group",
+  description: "Mimarlık ve Tasarımda 22 Yıllık Mükemmellik ile Hayaller Kuruyor ve Geleceği Şekillendiriyoruz",
 };
 
 export default function RootLayout({
@@ -23,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="tr">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
