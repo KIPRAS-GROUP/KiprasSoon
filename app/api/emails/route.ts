@@ -5,7 +5,7 @@ import nodemailer from "nodemailer";
 interface FormData {
   name: string;
   surname: string;
-  phone: string;
+  phone: number;
   email: string;
   position: string;
   message: string;
