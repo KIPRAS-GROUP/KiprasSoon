@@ -27,14 +27,14 @@ export default function Modal({ isOpen, onClose }: ModalProps) {
 
     try {
       const formData = new FormData(e.currentTarget);
-      const file = formData.get('cv') as File;
-      
+      const file = formData.get("cv") as File;
+
       // Dosya türü kontrolü
-      const fileType = file.name.split('.').pop()?.toLowerCase() || '';
-      const allowedTypes = ['pdf', 'doc', 'docx', 'txt'];
-      
+      const fileType = file.name.split(".").pop()?.toLowerCase() || "";
+      const allowedTypes = ["pdf", "doc", "docx", "txt"];
+
       if (!allowedTypes.includes(fileType)) {
-        setError('Lütfen sadece PDF, DOC, DOCX veya TXT dosyası yükleyin');
+        setError("Lütfen sadece PDF, DOC, DOCX veya TXT dosyası yükleyin");
         setIsSubmitting(false);
         return;
       }
@@ -43,20 +43,20 @@ export default function Modal({ isOpen, onClose }: ModalProps) {
       const base64File = await convertToBase64(file);
 
       const data = {
-        name: formData.get('name'),
-        surname: formData.get('surname'),
-        phone: formData.get('phone'),
-        email: formData.get('email'),
-        position: formData.get('position'),
-        message: formData.get('message'),
+        name: formData.get("name"),
+        surname: formData.get("surname"),
+        phone: formData.get("phone"),
+        email: formData.get("email"),
+        position: formData.get("position"),
+        message: formData.get("message"),
         cv: base64File,
-        fileType: fileType
+        fileType: fileType,
       };
 
-      const response = await fetch('/api/emails', {
-        method: 'POST',
+      const response = await fetch("/api/emails", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
       });
@@ -64,13 +64,12 @@ export default function Modal({ isOpen, onClose }: ModalProps) {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || 'Bir hata oluştu');
+        throw new Error(result.error || "Bir hata oluştu");
       }
 
       // Form başarıyla gönderildi
       formRef.current?.reset(); // Formu sıfırla
       onClose(); // Modal'ı kapat
-      
     } catch (err) {
       const error = err as FormError;
       setError(error.message);
@@ -85,7 +84,7 @@ export default function Modal({ isOpen, onClose }: ModalProps) {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => resolve(reader.result as string);
-      reader.onerror = error => reject(error);
+      reader.onerror = (error) => reject(error);
     });
   };
 
@@ -100,12 +99,22 @@ export default function Modal({ isOpen, onClose }: ModalProps) {
             className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
           >
             <span className="sr-only">Kapat</span>
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
-        
+
         {/* Mevcut form içeriği */}
         <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
           {/* Ad ve Soyad */}
@@ -191,14 +200,14 @@ export default function Modal({ isOpen, onClose }: ModalProps) {
               className="mt-1 p-2 border rounded w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             >
               <option value="">Seçiniz</option>
-              <option value="developer">Developer</option>
-              <option value="designer">Tasarımcı</option>
-              <option value="reklam">Reklam</option>
-              <option value="ceoasistan">Kişisel Asistan</option>
-              <option value="broker">Broker</option>
-              <option value="manager">Mimar</option>
-              <option value="icmanager">İç Mimar</option>
-              <option value="other">Diğer</option>
+              <option value="Developer">Developer</option>
+              <option value="Tasarımcı">Tasarımcı</option>
+              <option value="Reklam">Reklam</option>
+              <option value="Kişisel Asistan">Kişisel Asistan</option>
+              <option value="Broker">Broker</option>
+              <option value="Mimar">Mimar</option>
+              <option value="İç Mimar">İç Mimar</option>
+              <option value="Diğer">Diğer</option>
             </select>
           </div>
 
@@ -221,7 +230,10 @@ export default function Modal({ isOpen, onClose }: ModalProps) {
 
           {/* CV */}
           <div>
-            <label htmlFor="cv" className="block text-sm font-medium text-white">
+            <label
+              htmlFor="cv"
+              className="block text-sm font-medium text-white"
+            >
               CV Yükle
             </label>
             <input
