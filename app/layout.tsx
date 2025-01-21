@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "KİPRAS GOUP",
+  title: "KİPRAS GROUP",
   description: "Mimarlık ve Tasarımda 22 Yıllık Mükemmellik ile Hayaller Kuruyor ve Geleceği Şekillendiriyoruz",
 };
 
