@@ -70,7 +70,11 @@ export default function Modal({ isOpen, onClose }: ModalProps) {
     try {
       const reCaptchaToken = await executeRecaptcha();
 
-      const formData = new FormData(e.currentTarget);
+      if (!formRef.current) {
+        throw new Error("Form elemanına erişilemedi");
+      }
+
+      const formData = new FormData(formRef.current);
       const file = formData.get("cv") as File;
 
       // Dosya türü kontrolü
@@ -113,7 +117,7 @@ export default function Modal({ isOpen, onClose }: ModalProps) {
       }
 
       // Form başarıyla gönderildi
-      formRef.current?.reset(); // Formu sıfırla
+      formRef.current.reset(); // Formu sıfırla
       onClose(); // Modal'ı kapat
     } catch (err) {
       const error = err as FormError;
