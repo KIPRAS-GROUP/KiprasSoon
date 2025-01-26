@@ -120,7 +120,7 @@ const getSystemInfo = async () => {
 };
 
 // Logger fonksiyonu
-const logSubmission = (formData: FormData, status: "success" | "error", error?: string) => {
+const logSubmission = async (formData: FormData, status: "success" | "error", error?: string) => {
   const logEntry = {
     ...formData.systemInfo,
     formData: {
@@ -217,7 +217,7 @@ export async function POST(request: Request) {
                
     try {
       await rateLimiter.consume(ip);
-    } catch (error) {
+    } catch {
       return NextResponse.json(
         { error: "Çok fazla deneme yaptınız. Lütfen bir süre bekleyin." },
         { status: 429 }
@@ -247,7 +247,7 @@ export async function POST(request: Request) {
     
     // Form verilerinin kontrolü
     if (!formData.email || !formData.name || !formData.surname || !formData.position) {
-      const logEntry = logSubmission(formData, "error", "Missing required fields");
+      await logSubmission(formData, "error", "Missing required fields");
       return NextResponse.json(
         { error: "Gerekli form alanları eksik" },
         { status: 400 }
@@ -257,7 +257,7 @@ export async function POST(request: Request) {
     // Email formatı kontrolü
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      const logEntry = logSubmission(formData, "error", "Invalid email format");
+      await logSubmission(formData, "error", "Invalid email format");
       return NextResponse.json(
         { error: "Geçersiz email formatı" },
         { status: 400 }
@@ -269,7 +269,7 @@ export async function POST(request: Request) {
     const fileType = formData.fileType.toLowerCase();
     
     if (!allowedFileTypes.includes(fileType)) {
-      const logEntry = logSubmission(formData, "error", "Invalid file type");
+      await logSubmission(formData, "error", "Invalid file type");
       return NextResponse.json(
         { error: "Sadece PDF, DOC, DOCX ve TXT dosyalarına izin verilmektedir" },
         { status: 400 }
@@ -278,7 +278,7 @@ export async function POST(request: Request) {
 
     // CV kontrolü
     if (!formData.cv || !formData.cv.includes('base64')) {
-      const logEntry = logSubmission(formData, "error", "Invalid CV file");
+      await logSubmission(formData, "error", "Invalid CV file");
       return NextResponse.json(
         { error: "CV dosyası geçerli değil" },
         { status: 400 }
@@ -286,12 +286,12 @@ export async function POST(request: Request) {
     }
 
     await sendEmail(formData);
-    const logEntry = logSubmission(formData, "success");
+    await logSubmission(formData, "success");
 
     return NextResponse.json({ message: "Form başarıyla gönderildi" });
 
   } catch (error: any) {
-    console.error("Form gönderme hatası:", error);
+    console.error("Form gönderme hatası:", error.message);
     
     const emptyFormData: FormData = {
       name: "",
@@ -306,7 +306,7 @@ export async function POST(request: Request) {
       systemInfo: await getSystemInfo()
     };
     
-    const logEntry = logSubmission(emptyFormData, "error", error.message);
+    await logSubmission(emptyFormData, "error", error.message);
     
     return NextResponse.json(
       { error: "Form gönderilirken bir hata oluştu" },
