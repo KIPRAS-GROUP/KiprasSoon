@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useRef } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
 
 // Modal için props tipini tanımlayalım
 interface ModalProps {
@@ -14,6 +15,7 @@ interface FormError {
 
 export default function Modal({ isOpen, onClose }: ModalProps) {
   const formRef = useRef<HTMLFormElement>(null);
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -26,6 +28,13 @@ export default function Modal({ isOpen, onClose }: ModalProps) {
     setError(null);
 
     try {
+      const reCaptchaToken = recaptchaRef.current?.getValue();
+      if (!reCaptchaToken) {
+        setError("Lütfen reCAPTCHA doğrulamasını tamamlayın");
+        setIsSubmitting(false);
+        return;
+      }
+
       const formData = new FormData(e.currentTarget);
       const file = formData.get("cv") as File;
 
@@ -51,6 +60,7 @@ export default function Modal({ isOpen, onClose }: ModalProps) {
         message: formData.get("message"),
         cv: base64File,
         fileType: fileType,
+        reCaptchaToken: reCaptchaToken
       };
 
       const response = await fetch("/api/emails", {
@@ -69,6 +79,7 @@ export default function Modal({ isOpen, onClose }: ModalProps) {
 
       // Form başarıyla gönderildi
       formRef.current?.reset(); // Formu sıfırla
+      recaptchaRef.current?.reset(); // reCAPTCHA'yı sıfırla
       onClose(); // Modal'ı kapat
     } catch (err) {
       const error = err as FormError;
@@ -245,6 +256,13 @@ export default function Modal({ isOpen, onClose }: ModalProps) {
               className="mt-1 p-2 border rounded w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             />
           </div>
+
+          <ReCAPTCHA
+            ref={recaptchaRef}
+            sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
+            size="normal"
+            theme="dark"
+          />
 
           {error && <div className="text-red-500">{error}</div>}
 
