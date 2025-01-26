@@ -218,6 +218,7 @@ export async function POST(request: Request) {
     try {
       await rateLimiter.consume(ip);
     } catch {
+      console.log("Rate limit exceeded for IP:", ip);
       return NextResponse.json(
         { error: "Çok fazla deneme yaptınız. Lütfen bir süre bekleyin." },
         { status: 429 }
@@ -225,9 +226,15 @@ export async function POST(request: Request) {
     }
 
     const formData: FormData = await request.json();
+    console.log("Received form data:", { 
+      ...formData, 
+      cv: formData.cv ? "CV data present" : "No CV data",
+      reCaptchaToken: formData.reCaptchaToken ? "Token present" : "No token" 
+    });
     
     // reCAPTCHA doğrulama
     if (!formData.reCaptchaToken) {
+      console.log("No reCAPTCHA token provided");
       return NextResponse.json(
         { error: "reCAPTCHA doğrulaması gerekli" },
         { status: 400 }
@@ -236,6 +243,7 @@ export async function POST(request: Request) {
 
     const isRecaptchaValid = await verifyRecaptcha(formData.reCaptchaToken);
     if (!isRecaptchaValid) {
+      console.log("reCAPTCHA validation failed");
       return NextResponse.json(
         { error: "reCAPTCHA doğrulaması başarısız" },
         { status: 400 }
@@ -243,11 +251,23 @@ export async function POST(request: Request) {
     }
 
     // Sistem bilgilerini topla
-    formData.systemInfo = await getSystemInfo();
+    try {
+      formData.systemInfo = await getSystemInfo();
+    } catch (error) {
+      console.error("Error getting system info:", error);
+      // Sistem bilgisi alınamazsa devam et ama logla
+    }
     
     // Form verilerinin kontrolü
     if (!formData.email || !formData.name || !formData.surname || !formData.position) {
-      await logSubmission(formData, "error", "Missing required fields");
+      const missingFields = [];
+      if (!formData.email) missingFields.push("email");
+      if (!formData.name) missingFields.push("name");
+      if (!formData.surname) missingFields.push("surname");
+      if (!formData.position) missingFields.push("position");
+      
+      console.log("Missing required fields:", missingFields);
+      await logSubmission(formData, "error", `Missing required fields: ${missingFields.join(", ")}`);
       return NextResponse.json(
         { error: "Gerekli form alanları eksik" },
         { status: 400 }
@@ -257,6 +277,7 @@ export async function POST(request: Request) {
     // Email formatı kontrolü
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
+      console.log("Invalid email format:", formData.email);
       await logSubmission(formData, "error", "Invalid email format");
       return NextResponse.json(
         { error: "Geçersiz email formatı" },
@@ -269,6 +290,7 @@ export async function POST(request: Request) {
     const fileType = formData.fileType.toLowerCase();
     
     if (!allowedFileTypes.includes(fileType)) {
+      console.log("Invalid file type:", fileType);
       await logSubmission(formData, "error", "Invalid file type");
       return NextResponse.json(
         { error: "Sadece PDF, DOC, DOCX ve TXT dosyalarına izin verilmektedir" },
@@ -278,6 +300,7 @@ export async function POST(request: Request) {
 
     // CV kontrolü
     if (!formData.cv || !formData.cv.includes('base64')) {
+      console.log("Invalid CV file format");
       await logSubmission(formData, "error", "Invalid CV file");
       return NextResponse.json(
         { error: "CV dosyası geçerli değil" },
@@ -285,31 +308,45 @@ export async function POST(request: Request) {
       );
     }
 
-    await sendEmail(formData);
-    await logSubmission(formData, "success");
+    try {
+      await sendEmail(formData);
+    } catch (error) {
+      console.error("Error sending email:", error);
+      await logSubmission(formData, "error", "Email sending failed");
+      return NextResponse.json(
+        { error: "E-posta gönderilirken bir hata oluştu" },
+        { status: 500 }
+      );
+    }
 
+    await logSubmission(formData, "success");
     return NextResponse.json({ message: "Form başarıyla gönderildi" });
 
   } catch (error: any) {
-    console.error("Form gönderme hatası:", error.message);
+    console.error("Form submission error:", error);
+    console.error("Error stack:", error.stack);
     
-    const emptyFormData: FormData = {
-      name: "",
-      surname: "",
-      email: "",
-      position: "",
-      phone: "",
-      message: "",
-      cv: "",
-      fileType: "",
-      reCaptchaToken: "",
-      systemInfo: await getSystemInfo()
-    };
-    
-    await logSubmission(emptyFormData, "error", error.message);
+    try {
+      const emptyFormData: FormData = {
+        name: "",
+        surname: "",
+        email: "",
+        position: "",
+        phone: "",
+        message: "",
+        cv: "",
+        fileType: "",
+        reCaptchaToken: "",
+        systemInfo: await getSystemInfo()
+      };
+      
+      await logSubmission(emptyFormData, "error", error.message);
+    } catch (logError) {
+      console.error("Error during error logging:", logError);
+    }
     
     return NextResponse.json(
-      { error: "Form gönderilirken bir hata oluştu" },
+      { error: "Form gönderilirken bir hata oluştu. Lütfen tüm alanları kontrol edip tekrar deneyin." },
       { status: 500 }
     );
   }
