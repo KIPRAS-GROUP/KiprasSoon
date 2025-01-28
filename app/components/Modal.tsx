@@ -81,7 +81,10 @@ export default function Modal({ isOpen, onClose }: ModalProps) {
       const systemInfo = {
         screenResolution: `${window.screen.width}x${window.screen.height}`,
         timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        localDateTime: new Date().toISOString(),
+        // Tarihi yerel formatta gönder
+        localDateTime: new Date().toLocaleString('tr-TR', { 
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone 
+        }),
         timeZoneOffset: new Date().getTimezoneOffset().toString(),
         currentUrl: window.location.href,
       };

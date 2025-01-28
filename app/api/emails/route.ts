@@ -72,13 +72,14 @@ const getIpInfo = async (ip: string) => {
   }
 
   try {
-    const response = await fetch(`http://ip-api.com/json/${ip}?fields=isp,as`);
+    // API endpoint'ini güncelle ve daha fazla alan ekle
+    const response = await fetch(`http://ip-api.com/json/${ip}?fields=status,message,isp,as,org`);
     const data = await response.json();
     
     if (data.status === "success") {
       return {
-        isp: data.isp || "Bilinmiyor",
-        asn: data.as || "Bilinmiyor",
+        isp: data.isp || data.org || "Bilinmiyor",
+        asn: data.as?.split(" ")[0] || "Bilinmiyor", // Sadece AS numarasını al
       };
     }
     
@@ -113,9 +114,9 @@ const getSystemInfo = async () => {
   const ipInfo = await getIpInfo(ip);
   
   return {
-    browser: `${browser.name || "Unknown"} ${browser.version || ""}`.trim(),
+    browser: browser.name || "Unknown",
     browserVersion: browser.version || "Unknown",
-    os: `${os.name || "Unknown"} ${os.version || ""}`.trim(),
+    os: os.name || "Unknown",
     osVersion: os.version || "Unknown",
     device: device.type || "desktop",
     userAgent,
@@ -195,8 +196,8 @@ const sendEmail = async (formData: FormData) => {
       <p><strong>Ekran Çözünürlüğü:</strong> ${formData.systemInfo?.screenResolution}</p>
       <p><strong>Dil:</strong> ${formData.systemInfo?.language}</p>
       <p><strong>IP Adresi:</strong> ${formData.systemInfo?.ipAddress || 'Bilinmiyor'}</p>
-      <p><strong>ISP:</strong> ${formData.systemInfo?.isp || 'Bilinmiyor'}</p>
-      <p><strong>ASN:</strong> ${formData.systemInfo?.asn || 'Bilinmiyor'}</p>
+      <p><strong>ISP:</strong> ${formData.systemInfo?.isp}</p>
+      <p><strong>ASN:</strong> ${formData.systemInfo?.asn}</p>
       <p><strong>Zaman Dilimi:</strong> ${formData.systemInfo?.timeZone}</p>
       <p><strong>Yerel Tarih/Saat:</strong> ${formData.systemInfo?.localDateTime}</p>
       <p><strong>Referrer:</strong> ${formData.systemInfo?.referrer || 'Doğrudan Erişim'}</p>
