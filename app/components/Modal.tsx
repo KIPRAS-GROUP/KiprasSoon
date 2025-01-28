@@ -77,6 +77,15 @@ export default function Modal({ isOpen, onClose }: ModalProps) {
       const formData = new FormData(formRef.current);
       const file = formData.get("cv") as File;
 
+      // Sistem bilgilerini topla
+      const systemInfo = {
+        screenResolution: `${window.screen.width}x${window.screen.height}`,
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        localDateTime: new Date().toISOString(),
+        timeZoneOffset: new Date().getTimezoneOffset().toString(),
+        currentUrl: window.location.href,
+      };
+
       // Dosya türü kontrolü
       const fileType = file.name.split(".").pop()?.toLowerCase() || "";
       const allowedTypes = ["pdf", "doc", "docx", "txt"];
@@ -99,7 +108,8 @@ export default function Modal({ isOpen, onClose }: ModalProps) {
         message: formData.get("message"),
         cv: base64File,
         fileType: fileType,
-        reCaptchaToken
+        reCaptchaToken,
+        systemInfo // Sistem bilgilerini ekle
       };
 
       const response = await fetch("/api/emails", {

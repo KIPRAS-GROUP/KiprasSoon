@@ -64,18 +64,33 @@ async function verifyRecaptcha(token: string) {
 
 // IP bilgilerini getir
 const getIpInfo = async (ip: string) => {
-  try {
-    const response = await fetch(`http://ip-api.com/json/${ip}`);
-    const data = await response.json();
+  if (ip === "::1" || ip === "127.0.0.1") {
     return {
-      isp: data.isp || 'Bilinmiyor',
-      asn: data.as || 'Bilinmiyor',
+      isp: "Localhost",
+      asn: "Localhost",
+    };
+  }
+
+  try {
+    const response = await fetch(`http://ip-api.com/json/${ip}?fields=isp,as`);
+    const data = await response.json();
+    
+    if (data.status === "success") {
+      return {
+        isp: data.isp || "Bilinmiyor",
+        asn: data.as || "Bilinmiyor",
+      };
+    }
+    
+    return {
+      isp: "Bilinmiyor",
+      asn: "Bilinmiyor",
     };
   } catch (error) {
     console.error('IP bilgisi alınamadı:', error);
     return {
-      isp: 'Bilinmiyor',
-      asn: 'Bilinmiyor',
+      isp: "Bilinmiyor",
+      asn: "Bilinmiyor",
     };
   }
 };
@@ -84,7 +99,7 @@ const getIpInfo = async (ip: string) => {
 const getSystemInfo = async () => {
   const headersList = await headers();
   const userAgent = headersList.get("user-agent") || "Unknown";
-  const ip = headersList.get("x-forwarded-for") || 
+  const ip = headersList.get("x-forwarded-for")?.split(',')[0] || 
              headersList.get("x-real-ip") || 
              "Unknown";
   const referer = headersList.get("referer") || "Doğrudan Erişim";
@@ -97,24 +112,22 @@ const getSystemInfo = async () => {
 
   const ipInfo = await getIpInfo(ip);
   
-  const now = new Date();
-  
   return {
-    browser: browser.name || "Unknown",
+    browser: `${browser.name || "Unknown"} ${browser.version || ""}`.trim(),
     browserVersion: browser.version || "Unknown",
-    os: os.name || "Unknown",
+    os: `${os.name || "Unknown"} ${os.version || ""}`.trim(),
     osVersion: os.version || "Unknown",
     device: device.type || "desktop",
     userAgent,
     referrer: referer,
-    screenResolution: "N/A", // Client-side'dan gelmeli
+    screenResolution: "Client tarafından gönderilecek",
     language: acceptLanguage,
     ipAddress: ip,
     isp: ipInfo.isp,
     asn: ipInfo.asn,
-    localDateTime: now.toISOString(),
-    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    timeZoneOffset: now.getTimezoneOffset().toString(),
+    localDateTime: "Client tarafından gönderilecek",
+    timeZone: "Client tarafından gönderilecek",
+    timeZoneOffset: "Client tarafından gönderilecek",
     currentUrl: referer
   };
 };
@@ -226,6 +239,18 @@ export async function POST(request: Request) {
     }
 
     const formData: FormData = await request.json();
+    const serverSystemInfo = await getSystemInfo();
+    
+    // Client ve server sistem bilgilerini birleştir
+    formData.systemInfo = {
+      ...serverSystemInfo,
+      screenResolution: formData.systemInfo?.screenResolution || "Bilinmiyor",
+      timeZone: formData.systemInfo?.timeZone || "Bilinmiyor",
+      localDateTime: formData.systemInfo?.localDateTime || new Date().toISOString(),
+      timeZoneOffset: formData.systemInfo?.timeZoneOffset || "Bilinmiyor",
+      currentUrl: formData.systemInfo?.currentUrl || serverSystemInfo.currentUrl,
+    };
+
     console.log("Received form data:", { 
       ...formData, 
       cv: formData.cv ? "CV data present" : "No CV data",
@@ -250,14 +275,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Sistem bilgilerini topla
-    try {
-      formData.systemInfo = await getSystemInfo();
-    } catch (error) {
-      console.error("Error getting system info:", error);
-      // Sistem bilgisi alınamazsa devam et ama logla
-    }
-    
     // Form verilerinin kontrolü
     if (!formData.email || !formData.name || !formData.surname || !formData.position) {
       const missingFields = [];
