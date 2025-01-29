@@ -237,7 +237,7 @@ export function CareerForm() {
                 <FormField
                   control={form.control}
                   name="cv"
-                  render={({ field: { onChange, ...field } }) => (
+                  render={({ field: { onChange } }) => (
                     <FormItem>
                       <FormLabel>CV</FormLabel>
                       <FormControl>
@@ -260,7 +260,6 @@ export function CareerForm() {
                               onChange(base64Files)
                             })
                           }}
-                          {...field}
                         />
                       </FormControl>
                       <FormMessage>
