@@ -3,13 +3,9 @@ import Image from "next/image"
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-background to-background/80">
+    <main className="min-h-screen bg-[#1A1A1A]">
       {/* Hero Section */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px]" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
-        
         {/* Content */}
         <div className="container relative z-10 mx-auto px-4 py-32 text-center">
           <Image
