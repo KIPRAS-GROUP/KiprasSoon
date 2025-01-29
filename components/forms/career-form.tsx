@@ -89,7 +89,10 @@ export function CareerForm() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="lg">
+        <Button 
+          className="bg-[#1A1A1A] border-2 border-primary hover:bg-primary/10 text-primary" 
+          size="lg"
+        >
           Kariyer Fırsatları
         </Button>
       </DialogTrigger>
