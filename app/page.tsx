@@ -1,7 +1,5 @@
-import { Button } from "@/components/ui/button"
 import { CareerForm } from "@/components/forms/career-form"
 import Image from "next/image"
-import { ExperienceIcon, InnovationIcon, QualityIcon } from "@/components/icons"
 
 export default function Home() {
   return (

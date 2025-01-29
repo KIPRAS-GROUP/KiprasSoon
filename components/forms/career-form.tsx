@@ -30,7 +30,6 @@ import {
 } from "@/components/ui/select"
 import { FormSteps } from "@/components/forms/career-form-steps"
 import { AnimatePresence } from "@/components/ui/motion"
-import { cn } from "@/lib/utils"
 
 const positions = [
   { value: "mimar", label: "Mimar" },

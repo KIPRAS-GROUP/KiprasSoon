@@ -5,11 +5,6 @@ import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
 import { type CareerFormValues } from "@/lib/validations"
 
-interface StepProps {
-  currentStep: number
-  control: Control<CareerFormValues>
-}
-
 export function FormSteps({ currentStep }: { currentStep: number }) {
   const steps = [
     { title: "Kişisel Bilgiler", description: "Ad ve soyad bilgileri" },

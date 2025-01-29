@@ -1,16 +1,5 @@
 import * as z from "zod"
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
-const ACCEPTED_FILE_TYPES = [
-  "application/pdf",
-  "application/msword",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  "text/plain"
-]
-
-// Telefon numarası için regex (0 zorunlu değil)
-const PHONE_REGEX = /^[0-9]{10}$/
-
 export const careerFormSchema = z.object({
   name: z.string()
     .min(2, "Ad en az 2 karakter olmalıdır")

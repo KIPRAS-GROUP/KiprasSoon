@@ -72,7 +72,7 @@ export async function sendEmail(data: FormSubmission) {
   try {
     await transporter.verify()
     await transporter.sendMail(mailOptions)
-  } catch (error: any) {
+  } catch (error: Error | unknown) {
     console.error("Mail gönderme hatası:", error)
     throw new Error(`Mail gönderme hatası: ${error.message}`)
   }

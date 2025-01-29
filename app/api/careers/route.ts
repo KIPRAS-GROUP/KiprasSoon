@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server"
-import nodemailer from "nodemailer"
 import { RateLimiterMemory } from "rate-limiter-flexible"
 import { headers } from "next/headers"
 import { UAParser } from "ua-parser-js"

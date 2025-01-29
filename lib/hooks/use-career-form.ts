@@ -68,7 +68,7 @@ export function useCareerForm() {
       form.reset()
       setOpen(false)
       setStep(0)
-    } catch (error) {
+    } catch (error: Error | unknown) {
       setStatus("error")
       if (error instanceof Error) {
         if (error.message.includes("rate limit")) {
@@ -93,13 +93,4 @@ export function useCareerForm() {
     setOpen,
     onSubmit: form.handleSubmit(onSubmit),
   }
-}
-
-function convertToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onload = () => resolve(reader.result as string)
-    reader.onerror = (error) => reject(error)
-  })
 } 
