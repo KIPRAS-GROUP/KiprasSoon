@@ -237,7 +237,7 @@ export function CareerForm() {
                 <FormField
                   control={form.control}
                   name="cv"
-                  render={({ field: { onChange, value, ...field } }) => (
+                  render={({ field: { onChange, ...field } }) => (
                     <FormItem>
                       <FormLabel>CV</FormLabel>
                       <FormControl>

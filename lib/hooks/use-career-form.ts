@@ -11,7 +11,7 @@ import { delay } from "@/lib/utils"
 export function useCareerForm() {
   const [status, setStatus] = useState<FormStatus>("idle")
   const [open, setOpen] = useState(false)
-  const [step, setStep] = useState(0)
+  const [, setStep] = useState(0)
 
   const form = useForm<CareerFormValues>({
     resolver: zodResolver(careerFormSchema),
@@ -43,9 +43,10 @@ export function useCareerForm() {
       await delay(1000)
 
       // reCAPTCHA token al
-      const token = await (window as any).grecaptcha.execute(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!, {
-        action: 'submit'
-      })
+      const token = await window.grecaptcha.execute(
+        process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!,
+        { action: 'submit' }
+      )
 
       const response = await fetch("/api/careers", {
         method: "POST",

@@ -1,9 +1,7 @@
 "use client"
 
-import { type Control } from "react-hook-form"
 import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
-import { type CareerFormValues } from "@/lib/validations"
 
 export function FormSteps({ currentStep }: { currentStep: number }) {
   const steps = [
